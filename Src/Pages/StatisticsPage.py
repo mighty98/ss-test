@@ -12,18 +12,22 @@ class StatisticsPage(BasePage):
     def __init__(self, driver:WebDriver) -> None:
         self.driver = driver
 
+    # Function to clear filter text field
     def clear_filter(self):
        elem:WebElement = WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.ID,"filter-input")))
        elem.clear()
     
+    # Funtion to filter statistics table. Pass the search keyword to this function as a string
     def filter_statistics(self, value:str):        
         elem:WebElement = WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.ID,"filter-input")))
         self.enter_text(elem, value)
 
+    # Funtion to select an item from select list by its value
     def select_sort_criteria_by_value(self, sort_by:str):
         selectOptions: Select =  Select(WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.ID,"sort-select"))))
         selectOptions.select_by_value(sort_by)
 
+    # Function to sort statistics table by available options which are name, number of cases, impact score and complexity
     def sort_statistics_by(self, sort_by:str):
         if sort_by.lower() == "name":
             self.select_sort_criteria_by_value("name")
@@ -36,6 +40,7 @@ class StatisticsPage(BasePage):
         else:
             raise Exception("There is no such option as " + sort_by)
 
+    # Function to verify that the fitered result in the table all contain the search keyword
     def verify_filtered_result_for_name(self, key:str):
         WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.XPATH,"//div[@class='table-content']")),"No result found")
         filteredRows: List[WebElement] = self.driver.find_elements(By.XPATH,"//div[contains(@class,'data-name')]")
@@ -43,6 +48,7 @@ class StatisticsPage(BasePage):
             assert key.lower() in row.text.lower()
         
     
+    # Function to verify that table is sorted according to the selected option
     def verify_sort_statistics(self, sort_by:str):
         if sort_by.lower() == "name":
             names = [el.text for el in self.driver.find_elements(By.XPATH,"//div[contains(@class,'data-name')]")]
